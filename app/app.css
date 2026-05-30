@@ -1,0 +1,143 @@
+@import "tailwindcss";
+
+@theme {
+	--font-sans:
+		"Inter", ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji",
+		"Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+}
+
+html,
+body {
+	@apply bg-white dark:bg-gray-950;
+
+	@media (prefers-color-scheme: dark) {
+		color-scheme: dark;
+	}
+}
+
+/* GitHub-like Markdown Styles */
+.markdown-body {
+	font-family: var(--font-sans);
+	font-size: 14px;
+	line-height: 1.6;
+	word-wrap: break-word;
+}
+
+.markdown-body h1,
+.markdown-body h2,
+.markdown-body h3,
+.markdown-body h4 {
+	margin-top: 24px;
+	margin-bottom: 16px;
+	font-weight: 600;
+	line-height: 1.25;
+}
+
+.markdown-body h1 {
+	font-size: 1.75em;
+	border-bottom: 1px solid #eaecef;
+	padding-bottom: 0.3em;
+}
+.markdown-body h2 {
+	font-size: 1.4em;
+	border-bottom: 1px solid #eaecef;
+	padding-bottom: 0.3em;
+}
+.markdown-body h3 {
+	font-size: 1.2em;
+}
+.markdown-body h4 {
+	font-size: 1em;
+}
+
+.markdown-body p {
+	margin-bottom: 16px;
+}
+
+.markdown-body ul,
+.markdown-body ol {
+	padding-left: 2em;
+	margin-bottom: 16px;
+}
+
+.markdown-body ul {
+	list-style-type: disc;
+}
+.markdown-body ol {
+	list-style-type: decimal;
+}
+
+.markdown-body li + li {
+	margin-top: 0.25em;
+}
+
+.markdown-body code {
+	padding: 0.2em 0.4em;
+	margin: 0;
+	font-size: 85%;
+	background-color: rgba(27, 31, 35, 0.05);
+	border-radius: 3px;
+}
+
+.markdown-body pre {
+	padding: 16px;
+	overflow: auto;
+	font-size: 85%;
+	line-height: 1.45;
+	background-color: #f6f8fa;
+	border-radius: 6px;
+	margin-bottom: 16px;
+}
+
+.markdown-body pre code {
+	padding: 0;
+	margin: 0;
+	background-color: transparent;
+	border-radius: 0;
+}
+
+.markdown-body blockquote {
+	padding: 0 1em;
+	color: #6a737d;
+	border-left: 0.25em solid #dfe2e5;
+	margin-bottom: 16px;
+}
+
+.markdown-body a {
+	color: #0366d6;
+	text-decoration: none;
+}
+
+.markdown-body a:hover {
+	text-decoration: underline;
+}
+
+.markdown-body strong {
+	font-weight: 600;
+}
+
+.markdown-body table {
+	border-spacing: 0;
+	border-collapse: collapse;
+	margin-bottom: 16px;
+	width: 100%;
+}
+
+.markdown-body table th,
+.markdown-body table td {
+	padding: 6px 13px;
+	border: 1px solid #dfe2e5;
+}
+
+.markdown-body table tr {
+	background-color: #fff;
+	border-top: 1px solid #c6cbd1;
+}
+
+.markdown-body table tr:nth-child(2n) {
+	background-color: #f6f8fa;
+}
+
+.advice-markdown p:last-child {
+	margin-bottom: 0;
+}
