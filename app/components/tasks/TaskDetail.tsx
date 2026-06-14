@@ -17,6 +17,7 @@ type TaskDetailProps = {
 		data: {
 			title?: string;
 			description?: string | null;
+			doneCriteria?: string | null;
 			until_date?: Date | null;
 			categoryId?: string | null;
 			check_list?: CheckListItem[] | null;
@@ -36,6 +37,7 @@ export function TaskDetail({
 }: TaskDetailProps) {
 	const [editTitle, setEditTitle] = useState("");
 	const [editDescription, setEditDescription] = useState("");
+	const [editDoneCriteria, setEditDoneCriteria] = useState("");
 	const [editUntilDate, setEditUntilDate] = useState("");
 	const [editCategoryId, setEditCategoryId] = useState("");
 	const [editChecklist, setEditChecklist] = useState<CheckListItem[]>([]);
@@ -49,6 +51,7 @@ export function TaskDetail({
 		if (task) {
 			setEditTitle(task.title);
 			setEditDescription(task.description || "");
+			setEditDoneCriteria(task.doneCriteria || "");
 			setEditUntilDate(
 				task.until_date
 					? new Date(task.until_date).toISOString().split("T")[0]
@@ -88,7 +91,7 @@ export function TaskDetail({
 	}
 
 	const handleAddChecklistItem = () => {
-		setEditChecklist([...editChecklist, { title: "", completed: false }]);
+		setEditChecklist([...editChecklist, { title: "", completed: false, isToday: false }]);
 	};
 
 	const handleRemoveChecklistItem = (index: number) => {
@@ -137,6 +140,7 @@ export function TaskDetail({
 			await onUpdate(task.id, {
 				title: editTitle,
 				description: editDescription.trim() || null,
+				doneCriteria: editDoneCriteria.trim() || null,
 				until_date,
 				categoryId: editCategoryId || null,
 				check_list: editChecklist.length > 0 ? editChecklist : null,
@@ -441,6 +445,33 @@ export function TaskDetail({
 					)}
 				</section>
 
+				<section>
+					<h3 className="text-xs font-bold text-neutral-400 uppercase tracking-widest flex items-center gap-2 mb-4">
+						<svg
+							className="w-4 h-4"
+							fill="none"
+							viewBox="0 0 24 24"
+							stroke="currentColor"
+						>
+							<path
+								strokeLinecap="round"
+								strokeLinejoin="round"
+								strokeWidth={2}
+								d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+							/>
+						</svg>
+						Done Criteria
+					</h3>
+					<textarea
+						id="edit-done-criteria"
+						rows={2}
+						value={editDoneCriteria}
+						onChange={(e) => setEditDoneCriteria(e.target.value)}
+						className="w-full p-5 rounded-2xl bg-neutral-50 border border-neutral-100 text-neutral-700 leading-relaxed focus:ring-2 focus:ring-indigo-500 outline-none transition-all placeholder:text-neutral-300"
+						placeholder="What are the conditions for this task to be considered complete?"
+					/>
+				</section>
+
 				<section className="space-y-4">
 					<div className="flex items-center justify-between">
 						<h3 className="text-xs font-bold text-neutral-400 uppercase tracking-widest flex items-center gap-2">
@@ -580,6 +611,34 @@ export function TaskDetail({
 										placeholder="Checklist item..."
 										className="flex-grow bg-transparent border-none focus:ring-0 text-sm font-medium text-neutral-700 p-0"
 									/>
+									<button
+										type="button"
+										onClick={async () => {
+											const newChecklist = [...editChecklist];
+											newChecklist[index].isToday = !newChecklist[index].isToday;
+											setEditChecklist(newChecklist);
+											if (task) {
+												await onUpdate(task.id, { check_list: newChecklist });
+											}
+										}}
+										className={`p-1.5 rounded-lg text-[10px] font-bold uppercase tracking-wider transition-colors flex items-center gap-1 ${
+											item.isToday
+												? "bg-amber-100 text-amber-700 border border-amber-200"
+												: "bg-white text-neutral-400 border border-neutral-200 hover:bg-neutral-50 hover:text-neutral-600"
+										}`}
+										title={item.isToday ? "Remove from Today" : "Add to Today"}
+									>
+										<svg
+											className="w-3 h-3"
+											fill="none"
+											viewBox="0 0 24 24"
+											stroke="currentColor"
+											strokeWidth={2.5}
+										>
+											<path strokeLinecap="round" strokeLinejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+										</svg>
+										Today
+									</button>
 								</div>
 								<button
 									type="button"

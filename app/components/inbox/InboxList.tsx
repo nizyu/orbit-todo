@@ -227,7 +227,7 @@ export function InboxList() {
 											</div>
 										) : (
 											<div className="text-[10px] font-bold flex gap-1">
-												{item.annotation === "TODO" && (
+												{item.annotation === "DO" && (
 													<span className="text-indigo-600 bg-indigo-50 border border-indigo-100 px-2 py-1 rounded-md">
 														タスク化済み
 													</span>

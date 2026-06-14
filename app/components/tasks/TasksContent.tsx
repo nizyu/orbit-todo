@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useSearch, useNavigate } from "@tanstack/react-router";
 import { useAuth } from "../../lib/firebase-auth";
 import {
 	type Category,
@@ -33,9 +34,36 @@ export function TasksContent() {
 	const { user } = useAuth();
 	const [tasks, setTasks] = useState<Task[]>([]);
 	const [categories, setCategories] = useState<Category[]>([]);
-	const [selectedItem, setSelectedItem] = useState<SelectedItem | null>(null);
 	const [isSettingsExpanded, setIsSettingsExpanded] = useState(false);
 	const [isSubmitting, setIsSubmitting] = useState(false);
+
+	const { showCompleted, selectedType, selectedId, parentId } = useSearch({ from: "/tasks" });
+	const navigate = useNavigate({ from: "/tasks" });
+
+	const selectedItem = selectedType
+		? { type: selectedType, id: selectedId, parentId }
+		: null;
+
+	const setSelectedItem = (item: SelectedItem | null) => {
+		navigate({
+			search: (prev) => ({
+				...prev,
+				selectedType: item?.type || undefined,
+				selectedId: item?.id || undefined,
+				parentId: item?.parentId || undefined,
+			}),
+		});
+	};
+
+	const setShowCompleted = (val: boolean) => {
+		navigate({
+			search: (prev) => ({ ...prev, showCompleted: val || undefined }),
+		});
+	};
+
+	const filteredTasks = showCompleted
+		? tasks
+		: tasks.filter((t) => t.status !== "COMPLETED");
 
 	// フィルター状態
 	const now = new Date();
@@ -195,6 +223,16 @@ export function TasksContent() {
 								Tasks
 							</h2>
 							<div className="flex items-center gap-2">
+								<label className="flex items-center gap-1.5 text-xs font-bold text-neutral-500 hover:text-neutral-700 cursor-pointer select-none border border-neutral-200 rounded-xl px-2.5 py-1.5 bg-neutral-50/50 hover:bg-neutral-50 transition-colors">
+									<input
+										type="checkbox"
+										id="show-completed-toggle"
+										checked={showCompleted}
+										onChange={(e) => setShowCompleted(e.target.checked)}
+										className="rounded border-neutral-300 text-indigo-600 focus:ring-indigo-500 w-3.5 h-3.5 cursor-pointer"
+									/>
+									<span>Show Completed</span>
+								</label>
 								<button
 									onClick={() => setIsSettingsExpanded(!isSettingsExpanded)}
 									className={`p-2 rounded-xl transition-all duration-300 ml-1 ${
@@ -237,7 +275,7 @@ export function TasksContent() {
 
 					<div className="flex-1 overflow-y-auto">
 						<TaskTree
-							tasks={tasks}
+							tasks={filteredTasks}
 							categories={categories}
 							selectedItem={selectedItem as any}
 							onSelectTask={(id) => setSelectedItem({ type: "task", id })}
@@ -286,6 +324,7 @@ export function TasksContent() {
 					)}
 					{selectedItem?.type === "task" && selectedTaskWithCategory ? (
 						<TaskDetail
+							key={selectedTaskWithCategory.id}
 							task={selectedTaskWithCategory}
 							categories={activeCategories}
 							onUpdate={handleUpdateTask}
@@ -293,6 +332,7 @@ export function TasksContent() {
 						/>
 					) : selectedItem?.type === "category" && selectedCategory ? (
 						<CategoryForm
+							key={selectedCategory.id}
 							mode="edit"
 							category={selectedCategory}
 							baseCategories={baseCategories}
@@ -309,6 +349,7 @@ export function TasksContent() {
 						/>
 					) : selectedItem?.type === "new-category" ? (
 						<CategoryForm
+							key={`new-${selectedItem.parentId || "base"}`}
 							mode="create"
 							baseCategories={baseCategories}
 							isSubmitting={isSubmitting}

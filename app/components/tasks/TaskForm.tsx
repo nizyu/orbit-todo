@@ -9,6 +9,7 @@ type TaskFormProps = {
 	onSubmit: (data: {
 		title: string;
 		description?: string | null;
+		doneCriteria?: string | null;
 		until_date?: Date | null;
 		categoryId?: string | null;
 		parentCategoryId?: string | null;
@@ -18,6 +19,7 @@ type TaskFormProps = {
 	initialData?: {
 		title?: string;
 		description?: string;
+		doneCriteria?: string;
 		checklist?: string[];
 	};
 };
@@ -36,6 +38,9 @@ export function TaskForm({
 	);
 	const [description, setDescription] = useState(
 		initialData?.description || "",
+	);
+	const [doneCriteria, setDoneCriteria] = useState(
+		initialData?.doneCriteria || "",
 	);
 	const [showPreview, setShowPreview] = useState(false);
 
@@ -94,6 +99,7 @@ export function TaskForm({
 		await onSubmit({
 			title,
 			description: description.trim() || null,
+			doneCriteria: doneCriteria.trim() || null,
 			until_date,
 			categoryId,
 			parentCategoryId,
@@ -104,6 +110,7 @@ export function TaskForm({
 		form.reset();
 		setChecklist([""]);
 		setDescription("");
+		setDoneCriteria("");
 		setShowPreview(false);
 	};
 
@@ -189,6 +196,25 @@ export function TaskForm({
 							disabled={isSubmitting}
 						/>
 					)}
+				</div>
+
+				<div>
+					<label
+						htmlFor="doneCriteria"
+						className="block text-sm font-semibold text-neutral-700 mb-2"
+					>
+						Done Criteria
+					</label>
+					<textarea
+						name="doneCriteria"
+						id="doneCriteria"
+						rows={2}
+						value={doneCriteria}
+						onChange={(e) => setDoneCriteria(e.target.value)}
+						placeholder="What are the conditions for this task to be considered complete?"
+						className="block w-full rounded-xl border-neutral-300 bg-neutral-50 px-4 py-3 text-neutral-900 shadow-sm focus:border-indigo-500 focus:bg-white focus:ring-indigo-500 sm:text-sm transition-all duration-200 ease-in-out placeholder:text-neutral-400 border"
+						disabled={isSubmitting}
+					/>
 				</div>
 
 				<div className="grid grid-cols-1 md:grid-cols-2 gap-6">

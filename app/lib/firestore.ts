@@ -27,6 +27,7 @@ export type CategoryStatus = "ACTIVE" | "ARCHIVED";
 export interface CheckListItem {
 	title: string;
 	completed: boolean;
+	isToday?: boolean;
 }
 
 export interface Todo {
@@ -35,6 +36,7 @@ export interface Todo {
 	status: TodoStatus;
 	until_date: Date | null;
 	description: string | null;
+	doneCriteria: string | null;
 	check_list: CheckListItem[] | null;
 	categoryId: string | null;
 	parentCategoryId: string | null;
@@ -206,6 +208,7 @@ function docToTodo(id: string, data: Record<string, unknown>): Todo {
 		status: data.status as TodoStatus,
 		until_date: toDate(data.until_date as Timestamp | null),
 		description: (data.description as string | null) ?? null,
+		doneCriteria: (data.doneCriteria as string | null) ?? null,
 		check_list: (data.check_list as CheckListItem[] | null) ?? null,
 		categoryId: (data.categoryId as string | null) ?? null,
 		parentCategoryId: (data.parentCategoryId as string | null) ?? null,
@@ -222,6 +225,7 @@ function docToTodo(id: string, data: Record<string, unknown>): Todo {
 export interface CreateTodoInput {
 	title: string;
 	description?: string | null;
+	doneCriteria?: string | null;
 	until_date?: Date | null;
 	categoryId?: string | null;
 	parentCategoryId?: string | null;
@@ -237,6 +241,7 @@ export async function createTodo(
 		status: "OPEN",
 		until_date: toTimestamp(input.until_date ?? null),
 		description: input.description ?? null,
+		doneCriteria: input.doneCriteria ?? null,
 		check_list: input.check_list ?? null,
 		categoryId: input.categoryId ?? null,
 		parentCategoryId: input.parentCategoryId ?? null,
@@ -249,6 +254,7 @@ export async function createTodo(
 export interface UpdateTodoInput {
 	title?: string;
 	description?: string | null;
+	doneCriteria?: string | null;
 	until_date?: Date | null;
 	categoryId?: string | null;
 	parentCategoryId?: string | null;
@@ -265,6 +271,7 @@ export async function updateTodo(
 
 	if (input.title !== undefined) data.title = input.title;
 	if (input.description !== undefined) data.description = input.description;
+	if (input.doneCriteria !== undefined) data.doneCriteria = input.doneCriteria;
 	if (input.until_date !== undefined)
 		data.until_date = toTimestamp(input.until_date);
 	if (input.categoryId !== undefined) data.categoryId = input.categoryId;

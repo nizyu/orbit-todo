@@ -10,6 +10,7 @@ export function Header() {
 	const isTasks = pathname === "/tasks";
 	const isInbox = pathname === "/" || pathname === "/inbox";
 	const isPlans = pathname === "/plans";
+	const isToday = pathname === "/today";
 
 	const handleSignOut = async () => {
 		await signOut();
@@ -37,6 +38,16 @@ export function Header() {
 							}`}
 						>
 							Inbox
+						</Link>
+						<Link
+							to="/today"
+							className={`text-sm font-bold transition-all duration-200 border-b-2 py-1 ${
+								isToday
+									? "border-indigo-600 text-indigo-600"
+									: "border-transparent text-neutral-500 hover:text-neutral-800 hover:border-neutral-300"
+							}`}
+						>
+							Today
 						</Link>
 						<Link
 							to="/plans"

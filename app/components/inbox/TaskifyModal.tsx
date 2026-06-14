@@ -26,7 +26,8 @@ export function TaskifyModal({ item, onClose }: Props) {
 	useEffect(() => {
 		if (!user) return;
 		const unsub = subscribeCategories(user.uid, (data) => {
-			setCategories(data);
+			const activeCategories = data.filter((c) => c.status === "ACTIVE");
+			setCategories(activeCategories);
 		});
 		return () => unsub();
 	}, [user]);
@@ -153,6 +154,7 @@ export function TaskifyModal({ item, onClose }: Props) {
 							initialData={{
 								title: draftTask.title,
 								description: draftTask.description,
+								doneCriteria: draftTask.doneCriteria,
 								checklist: draftTask.checklist.map((c) => c.title),
 							}}
 						/>
