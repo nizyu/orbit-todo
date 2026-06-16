@@ -36,7 +36,7 @@ export function TaskifyModal({ item, onClose }: Props) {
 		setStep("generating");
 		setError(null);
 		try {
-			const draft = await suggestTaskFromInbox(item.content, prompt);
+			const draft = await suggestTaskFromInbox(item.content, prompt, categories);
 			setDraftTask(draft);
 			setStep("form");
 		} catch (err: any) {
@@ -49,8 +49,12 @@ export function TaskifyModal({ item, onClose }: Props) {
 	const handleSubmitTask = async (data: any) => {
 		if (!user) return;
 		try {
-			await createTodo(user.uid, data);
-			await updateInboxItem(item.id, { isProcessed: true, annotation: "DO" });
+			const taskId = await createTodo(user.uid, data);
+			await updateInboxItem(item.id, {
+				isProcessed: true,
+				annotation: "DO",
+				targetTaskId: taskId,
+			});
 			onClose();
 		} catch (err: any) {
 			console.error(err);
@@ -151,6 +155,7 @@ export function TaskifyModal({ item, onClose }: Props) {
 						<TaskForm
 							categories={categories}
 							onSubmit={handleSubmitTask}
+							initialCategoryId={draftTask.categoryId || undefined}
 							initialData={{
 								title: draftTask.title,
 								description: draftTask.description,

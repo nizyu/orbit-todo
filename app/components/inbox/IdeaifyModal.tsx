@@ -53,7 +53,7 @@ export function IdeaifyModal({ item, onClose }: IdeaifyModalProps) {
 		setError(null);
 		try {
 			// 1. 調査計画を作成
-			await createResearchPlan(user.uid, {
+			const planId = await createResearchPlan(user.uid, {
 				title: generatedTitle,
 				content: generatedContent,
 				inboxItemId: item.id,
@@ -63,11 +63,12 @@ export function IdeaifyModal({ item, onClose }: IdeaifyModalProps) {
 			await updateInboxItem(item.id, {
 				annotation: "SEED",
 				isProcessed: true,
+				targetPlanId: planId,
 			});
 
 			onClose();
-			// 調査計画画面に遷移
-			navigate({ to: "/plans" });
+			// 調査計画画面に遷移（クエリパラメータで新規作成したプランIDを渡す）
+			navigate({ to: "/plans", search: { planId } });
 		} catch (err: any) {
 			console.error("Save plan failed:", err);
 			setError(err.message || "調査計画の保存に失敗しました。");

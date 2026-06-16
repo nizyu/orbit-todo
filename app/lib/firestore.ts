@@ -73,6 +73,8 @@ export interface InboxItem {
 	isProcessed: boolean;
 	createdAt: Date;
 	updatedAt: Date;
+	targetTaskId?: string | null;
+	targetPlanId?: string | null;
 }
 
 export interface ResearchPlan {
@@ -235,8 +237,8 @@ export interface CreateTodoInput {
 export async function createTodo(
 	userId: string,
 	input: CreateTodoInput,
-): Promise<void> {
-	await addDoc(todosCol, {
+): Promise<string> {
+	const docRef = await addDoc(todosCol, {
 		title: input.title,
 		status: "OPEN",
 		until_date: toTimestamp(input.until_date ?? null),
@@ -249,6 +251,7 @@ export async function createTodo(
 		createdAt: serverTimestamp(),
 		updatedAt: serverTimestamp(),
 	});
+	return docRef.id;
 }
 
 export interface UpdateTodoInput {
@@ -416,6 +419,8 @@ export interface CreateInboxItemInput {
 	content: string;
 	annotation: InboxAnnotation;
 	isProcessed?: boolean;
+	targetTaskId?: string | null;
+	targetPlanId?: string | null;
 }
 
 export async function createInboxItem(
@@ -426,6 +431,8 @@ export async function createInboxItem(
 		content: input.content,
 		annotation: input.annotation,
 		isProcessed: input.isProcessed ?? false,
+		targetTaskId: input.targetTaskId ?? null,
+		targetPlanId: input.targetPlanId ?? null,
 		userId,
 		createdAt: serverTimestamp(),
 		updatedAt: serverTimestamp(),
@@ -436,6 +443,8 @@ export interface UpdateInboxItemInput {
 	content?: string;
 	annotation?: InboxAnnotation;
 	isProcessed?: boolean;
+	targetTaskId?: string | null;
+	targetPlanId?: string | null;
 }
 
 export async function updateInboxItem(
@@ -448,6 +457,8 @@ export async function updateInboxItem(
 	if (input.content !== undefined) data.content = input.content;
 	if (input.annotation !== undefined) data.annotation = input.annotation;
 	if (input.isProcessed !== undefined) data.isProcessed = input.isProcessed;
+	if (input.targetTaskId !== undefined) data.targetTaskId = input.targetTaskId;
+	if (input.targetPlanId !== undefined) data.targetPlanId = input.targetPlanId;
 
 	await updateDoc(ref, data);
 }
@@ -485,6 +496,8 @@ export function subscribeInboxItems(
 					userId: data.userId as string,
 					createdAt: toDate(data.createdAt as Timestamp) || new Date(),
 					updatedAt: toDate(data.updatedAt as Timestamp) || new Date(),
+					targetTaskId: (data.targetTaskId as string | null) ?? null,
+					targetPlanId: (data.targetPlanId as string | null) ?? null,
 				};
 			});
 			onData(items);

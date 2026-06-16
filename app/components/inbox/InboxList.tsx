@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Link } from "@tanstack/react-router";
 import { useAuth } from "../../lib/firebase-auth";
 import {
 	deleteInboxItem,
@@ -195,6 +196,28 @@ export function InboxList() {
 											<span className="text-xs font-bold text-neutral-900">
 												{config.label}
 											</span>
+											{item.isProcessed && (
+												<>
+													{item.annotation === "DO" && (
+														<Link
+															to="/tasks"
+															search={{ categoryId: undefined, taskId: item.targetTaskId || undefined }}
+															className="text-[10px] font-bold text-indigo-600 bg-indigo-50 border border-indigo-100 px-2 py-0.5 rounded-md hover:bg-indigo-100 transition-colors"
+														>
+															タスク化済み ↗
+														</Link>
+													)}
+													{item.annotation === "SEED" && (
+														<Link
+															to="/plans"
+															search={{ planId: item.targetPlanId || undefined }}
+															className="text-[10px] font-bold text-emerald-600 bg-emerald-50 border border-emerald-100 px-2 py-0.5 rounded-md hover:bg-emerald-100 transition-colors"
+														>
+															アイデア化済み ↗
+														</Link>
+													)}
+												</>
+											)}
 										</div>
 										<span className="text-xs font-medium text-neutral-400 shrink-0">
 											{item.createdAt
@@ -225,20 +248,7 @@ export function InboxList() {
 													アイデア化
 												</button>
 											</div>
-										) : (
-											<div className="text-[10px] font-bold flex gap-1">
-												{item.annotation === "DO" && (
-													<span className="text-indigo-600 bg-indigo-50 border border-indigo-100 px-2 py-1 rounded-md">
-														タスク化済み
-													</span>
-												)}
-												{item.annotation === "SEED" && (
-													<span className="text-emerald-600 bg-emerald-50 border border-emerald-100 px-2 py-1 rounded-md">
-														アイデア化済み
-													</span>
-												)}
-											</div>
-										)}
+										) : null}
 										<button
 											type="button"
 											onClick={() => handleDelete(item.id)}

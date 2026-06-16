@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useSearch, useNavigate } from "@tanstack/react-router";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { refineResearchPlan } from "../../lib/ai";
@@ -13,8 +14,20 @@ import {
 
 export function PlansContent() {
 	const { user } = useAuth();
+	const { planId } = useSearch({ from: "/plans" });
+	const navigate = useNavigate({ from: "/plans" });
+
 	const [plans, setPlans] = useState<ResearchPlan[]>([]);
-	const [selectedPlanId, setSelectedPlanId] = useState<string | null>(null);
+	const selectedPlanId = planId || null;
+
+	const setSelectedPlanId = (id: string | null) => {
+		navigate({
+			search: (prev) => ({
+				...prev,
+				planId: id || undefined,
+			}),
+		});
+	};
 	const [searchQuery, setSearchQuery] = useState("");
 	const [isLoading, setIsLoading] = useState(true);
 
